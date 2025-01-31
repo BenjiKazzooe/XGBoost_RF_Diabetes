@@ -138,6 +138,16 @@ Im Random Forest-Modell haben `Glucose_BMI` und `Glucose` die höchsten Einfluss
 
 
 ---
+🖥️ Nutzung der Streamlit-App
 
+Gib die Gesundheitswerte ein: Benutzer können verschiedene Parameter eingeben.
+
+Klicke auf "Vorhersage starten": Das Modell berechnet das Diabetes-Risiko.
+
+Ergebnisse anzeigen: Die App zeigt an, ob Diabetes festgestellt wurde oder nicht.
+
+<img width="645" alt="Bildschirmfoto 2025-01-31 um 13 56 50" src="https://github.com/user-attachments/assets/9e34ecff-145d-4c04-95d5-d4cc9bedd359" />
+
+---
 Falls du Fragen hast oder Verbesserungen vorschlagen möchtest, erstelle gerne ein Issue oder einen Pull-Request! 😊
 

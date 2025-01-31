@@ -1,0 +1,89 @@
+import kagglehub
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import classification_report
+from xgboost import XGBClassifier
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
+
+def load_data():
+    path = kagglehub.dataset_download("nancyalaswad90/review")
+    df = pd.read_csv(f"{path}/diabetes.csv")
+    return df
+
+def preprocess_data(df):
+    df['Glucose_BMI'] = df['Glucose'] * df['BMI']
+    X = df.drop(columns=['Outcome'])
+    y = df['Outcome']
+    return X, y
+
+def split_and_scale_data(X, y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+    return X_train, X_test, y_train, y_test
+
+def train_xgboost(X_train, y_train):
+    xgb_params = {
+        'n_estimators': [100, 300, 500],
+        'max_depth': [3, 5, 7],
+        'learning_rate': [0.01, 0.1, 0.2],
+        'gamma': [0, 0.1, 0.2],
+        'scale_pos_weight': [len(y_train) / sum(y_train)]
+    }
+    grid_xgb = GridSearchCV(XGBClassifier(eval_metric="logloss"), xgb_params, cv=3, scoring='recall')
+    grid_xgb.fit(X_train, y_train)
+    return grid_xgb.best_estimator_
+
+def train_random_forest(X_train, y_train):
+    param_grid_rf = {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [5, 10, None],
+        'class_weight': ['balanced', 'balanced_subsample']
+    }
+    grid_rf = GridSearchCV(RandomForestClassifier(random_state=42), param_grid_rf, cv=3, scoring='recall')
+    grid_rf.fit(X_train, y_train)
+    return grid_rf.best_estimator_
+
+def train_ensemble(xgb, rf, X_train, y_train):
+    ensemble = VotingClassifier(estimators=[('xgb', xgb), ('rf', rf)], voting='soft')
+    ensemble.fit(X_train, y_train)
+    return ensemble
+
+def evaluate_models(models, X_test, y_test):
+    for name, model in models.items():
+        y_pred = model.predict(X_test)
+        print(f"\nKlassifikationsbericht für {name}:")
+        print(classification_report(y_test, y_pred))
+
+def plot_feature_importance(model, feature_names, title):
+    importance = model.feature_importances_
+    indices = np.argsort(importance)[::-1]
+    plt.figure(figsize=(10, 6))
+    plt.title(title)
+    plt.barh(range(len(feature_names)), importance[indices], align="center")
+    plt.yticks(range(len(feature_names)), np.array(feature_names)[indices])
+    plt.xlabel("Feature-Wichtigkeit")
+    plt.gca().invert_yaxis()
+    plt.show()
+
+def main():
+    df = load_data()
+    X, y = preprocess_data(df)
+    X_train, X_test, y_train, y_test = split_and_scale_data(X, y)
+    
+    xgb = train_xgboost(X_train, y_train)
+    rf = train_random_forest(X_train, y_train)
+    ensemble = train_ensemble(xgb, rf, X_train, y_train)
+    
+    models = {"XGBoost": xgb, "Random Forest": rf, "Ensemble": ensemble}
+    evaluate_models(models, X_test, y_test)
+    
+    plot_feature_importance(xgb, X.columns, "Feature-Wichtigkeit im XGBoost-Modell")
+    plot_feature_importance(rf, X.columns, "Feature-Wichtigkeit im Random Forest-Modell")
+
+if __name__ == "__main__":
+    main()

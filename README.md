@@ -119,12 +119,14 @@ ensemble = VotingClassifier(estimators=[('xgb', xgb), ('rf', rf)], voting='soft'
 
 Die folgende Grafik zeigt die wichtigsten Merkmale für das XGBoost-Modell. Auffällig ist, dass `Glucose_BMI` die höchste Bedeutung hat. Dies bestätigt, dass die Kombination aus Blutzuckerwerten und BMI eine starke Korrelation mit Diabetes hat.
 
+![Figure_1](https://github.com/user-attachments/assets/b712d345-7a8f-4720-986f-9fe723f8f664)
 
 
 ### Feature-Wichtigkeit im Random Forest-Modell:
 
 Im Random Forest-Modell haben `Glucose_BMI` und `Glucose` die höchsten Einflusswerte. Das bestätigt die Bedeutung von Blutzuckerwerten für die Diabetes-Vorhersage. Auch das **Alter** (`Age`) und der **BMI** spielen eine wesentliche Rolle.
 
+![Figure_2](https://github.com/user-attachments/assets/dac8132c-99bc-401c-8cbb-0aeb72ffda62)
 
 
 ## 📌 Erkenntnisse & Optimierungspotenzial

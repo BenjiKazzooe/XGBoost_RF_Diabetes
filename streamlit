@@ -1,0 +1,55 @@
+import kagglehub
+import pandas as pd
+import numpy as np
+import streamlit as st
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import pickle
+
+# Datenverarbeitung und Modelltraining
+def load_data():
+    path = kagglehub.dataset_download("nancyalaswad90/review")
+    return pd.read_csv(f"{path}/diabetes.csv")
+
+def preprocess_data(df):
+    df['Glucose_BMI'] = df['Glucose'] * df['BMI']
+    return df.drop(columns=['Outcome']), df['Outcome']
+
+def split_and_scale_data(X, y):
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+    scaler = StandardScaler()
+    return scaler.fit_transform(X_train), scaler.transform(X_test), y_train, y_test, scaler
+
+def load_model(filename):
+    with open(filename, 'rb') as file:
+        return pickle.load(file)
+
+def predict_diabetes(features):
+    model = load_model("ensemble_model.pkl")
+    scaler = load_model("scaler.pkl")
+    scaled_data = scaler.transform(np.array(features).reshape(1, -1))
+    return "Diabetes festgestellt!" if model.predict(scaled_data)[0] == 1 else "Kein Diabetes festgestellt."
+
+# Streamlit App
+def main():
+    st.title("Diabetes-Vorhersage mit Machine Learning")
+    st.write("Geben Sie Ihre Werte ein, um eine Vorhersage zu erhalten.")
+    
+    inputs = {
+        "Glucose": st.number_input("Glucose Level", 0, 300, 120),
+        "BMI": st.number_input("BMI", 10.0, 50.0, 25.0),
+        "Age": st.number_input("Alter", 1, 120, 30),
+        "Pregnancies": st.number_input("Schwangerschaften", 0, 20, 1),
+        "BloodPressure": st.number_input("Blutdruck", 40, 200, 80),
+        "SkinThickness": st.number_input("Hautdicke", 0, 100, 20),
+        "Insulin": st.number_input("Insulin-Level", 0, 900, 80),
+        "DiabetesPedigreeFunction": st.number_input("Diabetes Pedigree Function", 0.0, 2.5, 0.5)
+    }
+    
+    if st.button("Vorhersage starten"):
+        features = list(inputs.values()) + [inputs["Glucose"] * inputs["BMI"]]
+        st.subheader("Ergebnis der Vorhersage:")
+        st.write(predict_diabetes(features))
+
+if __name__ == "__main__":
+    main()

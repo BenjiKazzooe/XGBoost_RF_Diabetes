@@ -149,5 +149,47 @@ Ergebnisse anzeigen: Die App zeigt an, ob Diabetes festgestellt wurde oder nicht
 <img width="645" alt="Bildschirmfoto 2025-01-31 um 13 56 50" src="https://github.com/user-attachments/assets/9e34ecff-145d-4c04-95d5-d4cc9bedd359" />
 
 ---
+# Streamlit starten
+
+Streamlit ist eine benutzerfreundliche Möglichkeit, Machine-Learning-Modelle in einer Web-App darzustellen. Folge diesen Schritten, um die Anwendung zu starten:
+
+##  Installation
+
+###  Überprüfe die Installation von Streamlit
+
+```bash
+streamlit --version
+```
+
+Falls Streamlit nicht installiert ist, installiere es mit:
+
+```bash
+pip install streamlit
+```
+
+## 🛠️ Streamlit-App starten
+
+Führe folgenden Befehl aus, um die Streamlit-App zu starten:
+
+```bash
+streamlit run script.py
+```
+
+Ersetze `script.py` mit dem Namen deines Skripts.
+
+## 📏 Zugriff auf die Anwendung
+
+Nach dem Start wird eine URL im Terminal ausgegeben, z. B.:
+
+```
+Local URL: http://localhost:8501
+```
+
+Öffne diese URL in einem Browser, um die Anwendung zu nutzen.
+
+
+
+---
+
 Falls du Fragen hast oder Verbesserungen vorschlagen möchtest, erstelle gerne ein Issue oder einen Pull-Request! 😊
 
